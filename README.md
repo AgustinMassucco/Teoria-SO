@@ -1,2 +1,2 @@
-# Teoria-SSO
-Repositorio para la teoria de SSO
+# Teoria-SO
+Repositorio para la teoria de SO
