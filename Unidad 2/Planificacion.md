@@ -59,4 +59,23 @@ Para realizar la planificación necesitamos basarnos en ciertas métricas que no
 
 **Cuantitativos**:
 
-26
+- *Tiempo de ejecución:* mide el tiempo desde que se solicita la creación de un proceso hasta que finaliza.
+- *Tiempo de espera:* suma todos los intervalos de tiempo que el proceso estuvo esperando en Ready. Los planificadores tienen este indicador en cuenta la momento de asignar prioridades.
+
+$TiempoDeEspera = TiempoFinal - TiempoLlegada - TiempoDeCPU$
+
+- *Tiempo de respuesta:* tiempo que transcurre desde que el proceso es iniciado hasta que da la primera respuesta
+
+$TiempoDeRespuesta = TiempoFinal - TiempoDeLlegada$
+
+- *Tasa de procesamiento: mide la cantidad de procesos que finalizan en un intervalo de tiempo determinado.*
+- *Utilización de la CPU:* mide el porcentaje de tiempo en el cual la CPU estuvo ocupada en un intervalo de tiempo. Mientras más alto el número mejor, siempre se intenta de que la CPU esté ocupada.
+
+**Cuantitativos**:
+
+- *Previsibilidad*: orientado al usuario. Hace referencia a qué comportamiento espera el usuario del sistema.
+- *Equidad/Imposición de prioridades/Equilibrado de recursos*: trata de asignar prioridades de manera pareja para que todos los procesos se puedan ejecutar y se asignen los recursos de forma equitativa.
+
+<h2>Algoritmos de planificación</h2>
+
+27
