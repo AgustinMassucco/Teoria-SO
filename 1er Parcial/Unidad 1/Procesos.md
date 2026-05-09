@@ -17,7 +17,7 @@ Entonces un proceso es toda la estructura que permite que un conjunto de instruc
 
 <h4>Estructura de un proceso</h4>
 
-![Estructura de un proceso](img/estructura-de-un-proceso.png "Estructura de un proceso")
+![Estructura de un proceso](img/estructura-de-un-proceso.png)
 
 - *Código:* espacio asignado para almacenar la secuencia de instrucciones del programa. Las instrucciones (así como están, en lenguaje de máquina) se cargan del disco a la memoria.**Los procesos no lo pueden modificar**  
 - *Datos:* espacio asignado para almacenar las variables globales. Todas las variables que están definidas por fuera de la función main van acá. **No lo pueden modificar el proceso.**
@@ -66,18 +66,19 @@ El estado de un proceso es el comportamiento del mismo. Conocer su estado nos pe
 
 - **Bloqueantes**: se ejecutan en el momento en que se llaman. Hacen que un proceso de bloquee.
 - **No bloquentes**: el proceso, una vez que ejecuta la syscall, no necesariamente pasa al estado de bloqueado. El proceso no sale de running, salvo cuando termina de ejecutar. En general, la syscall va a ser no bloqueante cuando un proceso no la necesite urgentemente para seguir ejecutando.
-![tipos de syscalls](img/tipos-de-syscalls.png "Tipos de syscalls")
+- 
+![tipos de syscalls](img/tipos-de-syscalls.png)
 
 
 <h6>Diagrama de dos estados</h6>
 
-![Diagrama de dos estados](img/Diagrama-de-dos-estados.png "Diagrama de dos estados")
+![Diagrama de dos estados](img/Diagrama-de-dos-estados.png)
 **Running/Ejecutando**: Un proceso que está usando la CPU
 **Not running/No ejecutando**: Un proceso (o muchos) que está esperando usar la CPU
 
 <h6>Diagrama de tres estados</h6>
 
-![Diagrama de tres estados](img/Diagrama-de-tres-estados.png "Diagrama de tres estados")
+![Diagrama de tres estados](img/Diagrama-de-tres-estados.png)
 
 El estado *not running* se divide en 2:
 
@@ -89,7 +90,7 @@ El estado *not running* se divide en 2:
 
 <h6>Diagrama de cincos estados</h6>
 
-![Diagrama de cinco estados](img/Diagrama-de-cinco-estados.png "Diagrama de cinco estados")
+![Diagrama de cinco estados](img/Diagrama-de-cinco-estados.png)
 
 - **New/Nuevo**: Cuando se quiere ejecutar un programa, pasa un tiempo entre que el CPU recibe el mensaje de ejecutar y cuando realmente se empieza a ejecutar.
   - Se preparan las estructuras
@@ -106,7 +107,7 @@ El estado *not running* se divide en 2:
 
 <h6>Diagrama de siete estados</h6>
 
-![Diagrama de siete estados](img/Diagrama-de-siete-estados.png "Diagrama de siete estados")
+![Diagrama de siete estados](img/Diagrama-de-siete-estados.png )
 
 *Desde cualquier estado se puede pasar a exit*. Se agrega la idea de suspender un proceso. Hoy en día no tiene mucho sentido pero antes se usaba para pasar las estructuras de un proceso la disco para liberar memoria y poder ejecutar más procesos.
 
@@ -167,6 +168,6 @@ Un padre puede interrumpir la ejecución de sus hijos con la syscall `abort()`.
 
 Se produce cuando viene ejecutando un proceso en el procesador, por algún motivo deja de ejecutar y comienza a ejecutar otro. El cambio de contexto puede tener como objetivo ejecutar otro proceso,a tender una interrupción o ejecutar una syscall
 
-![Cambio de procesos](img/cambio-de-procesos.png "Cambio de proceso")
+![Cambio de procesos](img/cambio-de-procesos.png)
 
 Se debe guardar el contexto de ejecución del proceso 1 para luego poder reanudarlo desde que fue interrumpido.

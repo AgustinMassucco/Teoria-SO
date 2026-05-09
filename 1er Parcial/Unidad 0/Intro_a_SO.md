@@ -24,7 +24,7 @@ Todo SO tiene un core (núcleo) donde están desarrolladas las funcionalidades b
   - Aplicaciones: destinadas al uso por parte del usuario final. Estas aplicaciones o programas, a la hora de usar el hardware, tiene que pasar por el SO. Los programas no hablan directamente con el hardware, sino que el SO está de intermediario.
   - Utilidades: recursos usados por los programadores para interactuar con el SO y el HW.
   
-![Capas de una computadora](Img\Capas-de-una-computadora.png)
+![Capas de una computadora](img/Capas-de-una-computadora.png)
 
 ### Evolución de los SOs 
 
@@ -37,7 +37,7 @@ Todo SO tiene un core (núcleo) donde están desarrolladas las funcionalidades b
 
 ## Llamadas al sistema (SYSCALLS)
 
-![Syscalls](img/syscalls.png)
+![Syscalls](img/Syscalls.png)
 
 Las **syscalls** son funciones incluidas en el kernel del SO mediante las cuales u programa puede solicitar servicios al SO. Estos serivicios implican típicamente acceder al HW, o acceder a programas a los que sólo el SO tiene acceso. Es decir, el único modo que tienen las aplicaciones de hablar con el HW es a través de llamadas al sistema. Las mismas son accesibles a través de un lenguaje de programación porque son simplemente funciones, por ejemplo:
 
@@ -82,7 +82,7 @@ Para que deje de ejecutar una aplicación pueden ocurrir dos cosas:
 ###### ¿Cuándo se produce?
 Un usuario **no** puede cambiar el modo de ejecución. El cambio se produce cuando un programa realiza una llamada al sistema. Todos los programas comienzan en modo usuario. Cuando se recibe la syscall empieza a ejecutar el sistema operativo y hace lo que tiene que hacer. Después se devuelve el resultado al proceso, que continúa ejecutando en modo usuario.
 
-![Mode Switch](img/Mode-Switch.png).
+![Mode Switch](img/Mode-Switch.png)
 
 ###### ¿Puede un programa ejecutar una instrucción privilegiada?
 
