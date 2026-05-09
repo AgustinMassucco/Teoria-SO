@@ -263,7 +263,7 @@ El monitor posee datos locales que sólo él puede modificar. Si un proceso quie
 
 ![Productor y consumidor](img/Productor%20y%20consumidor.png)
 
-1. Identificamos que el buffer es un recurso compartido entre el productor y el consumidor. El productor agrega y el consumidor quita, por lo que los dos procesos modifican al recurso. Es entonces una sección critica. Entonces tenemos que usar un semáforo mtuex para garantizar la mutua exclusión sobre el buffer. Como es un buffer lo inicializamos en 1. `s_buffer = 1`
+1. Identificamos que el buffer es un recurso compartido entre el productor y el consumidor. El productor agrega y el consumidor quita, por lo que los dos procesos modifican al recurso. Es entonces una sección critica. Entonces tenemos que usar un semáforo mutex para garantizar la mutua exclusión sobre el buffer. Como es un buffer lo inicializamos en 1. `s_buffer = 1`
 2. Ahora nos damos cuenta de otra cosa: queremos que el productor ejecute primero (porque si el buffer está vacío al consumidor no le serviría). Es decir, queremos que cuando el consumidor quiera consumir haya algo en el buffer. Vamos a necesitar 2 semáforos. Un semáforo va a representar "*agregué elementos al buffer entonces hay cantidad suficiente para que puedas consumir*" y otro que represente "*hay x lugares disponibles e el buffer para que pongas más elementos*"
 
 - `s_lugar = N` (porque al principio ha N lugares disponibles en el buffer). Este es, justamente, un semáforo de tipo contador que mide la cantidad de lugares (recursos) disponibles.
