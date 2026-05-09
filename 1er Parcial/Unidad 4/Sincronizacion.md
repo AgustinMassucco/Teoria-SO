@@ -202,4 +202,69 @@ Se implementan mediante dos *llamadas al sistema*: `wait()` y `signal()` (ademá
 
 ![Struct semáforo](img/Semaforo-struct.png)
 
-55
+El struct está compuesto por un int que puede tomar cualquier valor y por una lista de procesos bloqueados.
+
+Vamos a ver que hacen `wait()` y `signal()`.
+
+![Wait y Signal](img/wait-signal.png)
+
+- `wait()`: decrementa el valor del semáforo en 1. Después pregunta si el valor del semáforo es menor que 0. Si lo es, el proceso que está haciendo el `wait` se va a bloquear.
+- `signal()`: Incrementa el valor del semáforo en1. Después pregunta si el valor del semáforo es menor o igual a 0. Si lo es, desbloquea a alguno de los procesos que estaban bloqueados.
+
+**Valores de un semáforo**:
+
+- Valor de inicialización: siempre es un valor positivo o cero. Nunca puede inicializarse en un valor negativo.
+- Si es mayor a 0: representa la cantidad de instancias disponibles de un recurso.
+- Si es menor a cero: representa la cantidad de procesos/hilos bloqueados en espera a ser llamados.
+- Si es cero: quiere decir que no hay disponibilidad y tampoco nadie en espera.
+
+**Utilidades**:
+
+- Mutua exclusión: Se utiliza un semáforo llamado *mutex*. Cuando un procesos quiera entrar a la sección critica hace un `wait()` y cuando sale hace un `signal()`
+
+![Wait y Signal](img/wait-signal-a.png)
+
+- Sincronización de procesos: se utiliza un semáforo *binario*. Supongamos que queremos que una sección de código de un proceso se ejecute necesariamente después de que se ejecute otra sección de otro proceso. Como no sabemos en qué orden el SO va a designar a los procesos el uso de la CPU, necesito que los procesos estén sincronizados.
+
+En este ejemplo tenemos dos semáforos, `s = 1` y `q = 0`. Ahora, para entender cómo funciona supongamos los dos casos:
+
+- Comienza P0: se hace un wait de s y su valor pasa a 0. Se ejecuta la sección de código en cuestión y se señala al semáforo q, quedando su valor en 1. Cuando ejecute el P1, va a hacer un wait de q y su valor va a quedar en 0. Va a ejecutar su código normalmente y, cuando termine, va a señalar a s.
+- Comienza P1: con q inicialmente en 0, al hacer un wait su valor quedará en -1. Al ser un valor menor a 0, se va a bloquear al proceso que hizo el wait: O se, se va a bloquear a P1 y va a permanecer bloqueado hasta que el P0 haga un signal de q que lo despierte. Esto garantiza que siempre van a ejecutar en orden P0,P1,P0,... 
+  
+![Utilidades signal y wait](img/utilidades-wait-signal.png)
+
+
+- Controlar accesos a recursos (n instancias): declaramos un semáforo con un valor igual a la cantidad de instancias de un recurso. Supongamos un recurso con 3 instancias. El primer recurso que se solicite dejará al semáforo en 2. Luego, si otro proceso solicita una instancia quedará el semáforo en 1. Y cuando venga otro proceso tomará el último recurso y dejará el semáforo en0. El tema es que cuando llegue un nuevo proceso. Al hacer el wait, el semáforo bloqueará al proceso y lo agregará a la cola de procesos bloqueados (o, procesos en espera para usar el recurso). El valor del semáforo será -1.
+
+**Tipos de semáforos**:
+
+- Contador/general: permite controlar el acceso a una cantidad de recursos. Se inicializa en un valor mayor a 0, específicamente en n (siendo n la cantidad de instancias totales del recurso).
+- Binario: permite garantizar un orden de ejecución. Representa libre u ocupado. Se inicializa en 0 o 1. También puede usarse para proteger recursos pero se usa de forma diferente (nunca sabremos cuantas instancias tenemos disponibles, ni cuántos procesos están bloqueados, sólo sabremos cuándo hay recursos disponibles y cuando no).
+  - Mutex: es una variante del binario utilizada para garantizar la mutua exclusión sobre un recurso o sección critica. Siempre se inicializa en 1 y resuelve el problema de condición de carrera.
+
+**¿Pueden ser interrumpidos los semáforos?**
+Si y no. Wait y siganl deben implementar alguno de los métodos que vimos (de software/hardware) para garantizar que, en caso de ser interrumpidos, no afecten el funcionamiento de los semáforos. En caso de que la solución sea deshabilitar las interrupciones (que tanto wait como signal pueden hacerlo dado que ambas se ejecutan en modo kernel), se dirá que son atómicas, es decir, se ejecutan por completo en un ciclo de instrucción o no se ejecutan. No pueden ser interrumpidas.
+
+**Orden de la cola de bloqueados de un semáforo**: el algoritmo FIFO parece ser el más justo y es el que vamos a usar en los ejercicios aunque puede usarse otro tipo de planificación
+
+#### Soluciones de los lenguajes de programación
+
+Son soluciones provistas por los lenguajes orientados a objetos haciendo uso del encapsulamiento. Un monitor va a ser una clase que va a permitir que únicamente un proceso ejecute en el monitor a la vez. Cuando ejecute, va a poder ejecutar cualquiera de los procedimientos definidos en el monitor. Los demás procesos permanecerán en el área de espera.
+El monitor posee datos locales que sólo él puede modificar. Si un proceso quiere hacer uso de estos datos, deberá invocar a alguno de los procedimientos del monitor. De estar disponible, lo ejecutará, de otra forma, pasará al área de espera.
+
+![Soluciones de programación](img/Soluciones-de-programacion.png)
+
+**Ventajas**:
+
+- Promueve la mutua exclusión
+- Permite sincronizar procesos
+
+### Productor y consumidor
+
+![Productor y consumidor](img/Productor%20y%20consumidor.png)
+
+1. Identificamos que el buffer es un recurso compartido entre el productor y el consumidor. El productor agrega y el consumidor quita, por lo que los dos procesos modifican al recurso. Es entonces una sección critica. Entonces tenemos que usar un semáforo mtuex para garantizar la mutua exclusión sobre el buffer. Como es un buffer lo inicializamos en 1. `s_buffer = 1`
+2. Ahora nos damos cuenta de otra cosa: queremos que el productor ejecute primero (porque si el buffer está vacío al consumidor no le serviría). Es decir, queremos que cuando el consumidor quiera consumir haya algo en el buffer. Vamos a necesitar 2 semáforos. Un semáforo va a representar "*agregué elementos al buffer entonces hay cantidad suficiente para que puedas consumir*" y otro que represente "*hay x lugares disponibles e el buffer para que pongas más elementos*"
+
+- `s_lugar = N` (porque al principio ha N lugares disponibles en el buffer). Este es, justamente, un semáforo de tipo contador que mide la cantidad de lugares (recursos) disponibles.
+- `s_cant = 0` (porque al principio no hay elementos en el buffer)
