@@ -1,5 +1,3 @@
-<span style="font-family: Luciole">
-
 # Memoria Real
 
 ## Introducción
@@ -166,4 +164,206 @@ Cada cierto tiempo se debe compactar los segmentos libres, para que estén conti
 
 ##### 3. Paginación Simple
 
-</span>
+La memoria principal se divide en un conjunto de marcos de igual tamaño. Cada proceso se divide en una seria de páginas del tamaño de los marcos.
+Un proceso se carga en los marcos que requiera (todas las páginas), no necesariamente contiguos.
+
+- Ventajas:
+  - No hay fragmentación externa
+- Desventajas:
+  - Fragmentación interna pequeña
+
+El SO mantiene una tabla de paginas para cada proceso, que contiene la lista de marcos para cada pagina.
+
+Una dirección de memoria es un número de página (P) y un desplazamiento dentro de la página (W).
+
+![Tabla de páginas](./img/PS_Tabla_de_paginas.png)
+
+###### Estrategias de la paginación simple
+
+- Solicitud:
+  - Por demanda
+- Ubicación:
+  - Se cargan todas las páginas de un proceso en los marcos libres y se actualiza su tabla de páginas
+- Reemplazo:
+  - Una de las páginas se puede sacar y se marca que no está cargada. Esto es posible por que cada proceso tiene su propia tabla de páginas.
+  - No es necesario sacar todas las páginas de un proceso.
+
+###### Traducción de direcciones
+
+Una dirección generada por un proceso es dividida en:
+
+- **Página ($p$)** usando como índice en la tabla de páginas que contiene la dirección base de cada página en memoria física.
+- **Desplazamiento ($d$)** se combina con la dirección base para definir la dirección de memoria física que se envía a la unidad de memoria
+
+![Traducción de direcciones](./img/PS_Traduccion_de_direcciones.png)
+
+###### Capacidad de direccionamiento
+
+![Capacidad de direccionamiento](./img/PS_Capacidad_de_direccionamiento.png)
+
+###### Ejemplo de Paginación
+
+![Ejemplo de Paginación](./img/PS_Ej_Paginacion.png)
+
+###### Marcos Libres
+
+![Marcos Libres](./img/PS_Marcos_libres.png)
+
+###### Tabla de Páginas
+
+- La tabla de páginas se mantiene en memoria principal.
+- El **registro base de la tabla de páginas (PTBR)** apunta al inicio de la tabla de páginas
+- El **registro longitud de la tabla de páginas (PRLR)** indica el tamaño de la tabla de páginas
+
+En este esquema cada acceso a dato o instrucción requiere dos accesos a memoria. Uno para la tabla de páginas y otro para obtener el dato o instrucción.
+
+Se puede agilizar el proceso usando una pequeña memoria asociativa o **TLB (translation look-aside buffer)**
+
+###### Memoria Asociativa
+
+- Memoria Asociativa - búsqueda en paralelo
+
+| # Página | # Marco |
+|-|-|
+|||
+|||
+|||
+
+**Traducción de direcciones (p,d)**:
+
+- Si p está en un registro asociativo se obtiene el número de marco
+- Si no, se obtiene el número de marco de la tabla de páginas que está en memoria principal.
+
+###### HW de Paginación con TLB
+
+![HD de paginación con TLB](./img/PS_HW_de_Paginación_con_TLB.png)
+
+###### Tiempo de acceso efectivo
+
+- Busqueda asociativa = $\epsilon$ unidades de tiempo
+- Acceso a memoria = $m$
+- Tasa de acierto $\rarr$ probabilidad de encontrar una página en los registros asociativos
+  - Depende de las peticiones de páginas y el número de registros asociativos
+- Tasa de acierto = $\alpha$
+- **Tiempo de acceso efectivo** (Effective Access Time, EAT)
+  $EAT = (M+\epsilon)\alpha+(2m+\epsilon)(1-\alpha)=2m-\alpha m + \epsilon$
+
+###### Protección de la memoria
+
+La protección de la memoria se implementa asociando un bit de protección con cada página. Hay un **bit de validez** en cada entrada de la tabla de páginas:
+
+- *Válido* indica que la página asociada está en el espacio de direcciones lógico del proceso, y por lo tanto es legal el acceso.
+- *Inválido* indica que la página no está en el espacio de direcciones lógico del proceso 
+
+![Bit de validez](./img/PS_Bit_de_validez.png)
+
+###### Tabla de páginas multinivel
+
+Divide el espacio de direcciones lógicas en múltiples tablas de páginas
+
+![Tabla de páginas multinivel](./img/PS_Tabla_de_paginas_multinivel.png)
+
+###### Ej de paginación de 2 niveles
+
+Una dirección lógica (en una máquina de 32 bits con tamaño de páginas de 4k) se divide en:
+
+- Un número de páginas de 20 bits
+- Un desplazamiento dentro de la página de 12 bits
+
+Ya que la tabla de páginas está paginada y cada entrada de la tabla de páginas ocupa 4 bytes, el número de página es de nuevo dividido en:
+
+- Un número de página de 10 bits
+- Un desplazamiento de 10 bits
+
+![Paginación de dos niveles](./img/PS_Paginación_de_2_niveles.png)
+
+Donde $p_1$ es un índice en la tabla externa y $p_2$ es un desplazamiento en la segunda tabla de páginas.
+
+![Esquema de traducción](./img/PS_Esquema_de_traduccion.png)
+
+![Paginación de tres niveles](./img/PS_Paginación_de_3_niveles.png)
+
+###### Tabla de páginas invertida
+
+Es una entrada por cada *marco* de memoria. Las entradas contienen la dirección virtual de la página almacenada en el marco con información sobre el proceso que la posee.
+Disminuye la memoria necesaria para almacenar cada tabla de páginas pero aumenta el tiempo requerido para buscar en la tabla cuando ocurre una referencia a memoria.
+La solución es usar una tabla hash para limitar la búsqueda a una entrada (o unas pocas como mucho).
+
+![Tabla de páginas invertida](./img/PS_Tabla_de_paginas_invertida.png)
+
+##### 4. Segmentación Simple
+
+Cada proceso y sus datos se dividen en segmentos de longitud variable. Un proceso carga sus segmentos en particiones dinámicas no necesariamente contiguas.
+Todos los segmentos de un proceso se deben cargar en memoria.
+Se diferencia de la partición dinámica en que un proceso puede ocupar más de un segmento.
+
+- Ventajas
+  - No hay fragmentación interna
+- Desventajas
+  - Fragmentación externa, pero menor (compactación)
+
+El SO mantiene una tabla de segmentos para cada proceso y la lista de bloques libres.
+Una dirección de memoria es un *número de segmento (S)* y un *desplazamiento dentro de segmento (W)*.
+
+![Segmentación simple](./img/SS_Ejemplo.png)
+
+###### Estrategias de la segmentación simple
+
+- Solicitud
+  - Por demanda
+- Ubicación
+  - Se cargan los segmentos de un proceso en los bloques libres y se actualiza su tabla de segmentos.
+- Reemplazo
+  - Uno de los segmentos se puede sacar y se marca como que no está cargado. Esto es posible porque cada uno de los procesos tiene su tabla de segmentos
+
+
+###### Segmentación
+
+Es un esquema de gestión de memoria que apoya la visión que el usuario tiene de la memoria.
+
+- Un programa es una colección de segmentos.
+- Un segmento es una unidad lógica.
+
+![Segmentación](./img/SS_Segmentación.png)
+
+###### Esquema de segmentación
+
+- Una dirección lógica consiste en un par:
+  < número de segmento,desplazamiento >
+- **Tabla de segmentos**: Contiene información sobre la ubicación de los segmentos en memoria; cada entrada tiene:
+  - **base**: contiene la dirección física en la que comienza el segmento
+  - **límite**: especifica la longitud del segmento
+- El **registro base de la tabla de segmentos (STBR)** apunta a la localización en memoria de la tabla de segmentos.
+- El **registro de longitud de la tabla de segmentos (STLR)** indica el número de segmentos usados por un programa
+- El número de segmentos **$s$** es legal si **$s$ < STLR**
+- Protección
+  - En cada entrada de la tabal de segmentos hay:
+    - Privilegios de lectura/escritura/ejecución
+    - Set de instrucciones permitidas
+    - Nivel de privilegio
+- Los bits de protección están asociados con los segmentos; la compartición de código ocurre a nivel de segmento.
+- Ya que los segmentos varían en longitud, la asignación de memoria es un problema de asignación dinámica
+
+###### Validación del direccionamiento
+
+- No hay correspondencia entre dirección lógica y dirección física.
+- El SO trabaja con direcciones lógicas.
+- El SO debe asegurar que cada dirección lógica esté dentro del rango de direcciones del proceso
+- El SO implementa la tabla de segmentos como un arreglo de registros base y limite
+
+![Tabla de segmentos](./img/SS_Tabla_de_segmentos.png)
+
+![Ejemplo tabla de segmentos](./img/SS_Ejemplo_tabla_de_segmentos.png)
+
+##### Segmentación con Paginación
+
+La paginación y la segmentación se pueden combinar en la segmentación con paginación.
+En este esquema de gestión de memoria los segmentos se paginan.
+
+- Se apoya la visión de la memoria que tiene el usuario
+- Se resuelve el problema de la asignación dinámica
+- Es necesario una tabla de segmentos y una tabla de páginas por cada segmento
+- La traducción de direcciones es más compleja y puede requerir mayor número de accesos a memoria en el peor caso
+
+![Segmentación paginada](./img/Segmentación_paginada.png)
+
